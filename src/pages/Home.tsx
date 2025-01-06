@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router"
 
 function Home() {
   const category = "nature"
   const [img, setImg] = useState("")
 
   useEffect(() => {
+    let isMounted = true
     fetch("https://api.api-ninjas.com/v1/randomimage?category=" + category, {
       headers: {
         "X-Api-Key": "BxJY/hAn8fZwf4C7jpeHtg==ayRrQ35KtXHH1Q06",
@@ -13,8 +15,14 @@ function Home() {
     })
       .then((response) => response.blob())
       .then((blob) => {
-        setImg(URL.createObjectURL(blob))
+        if (isMounted) {
+          setImg(URL.createObjectURL(blob))
+        }
       })
+
+    return () => {
+      isMounted = false
+    }
   }, [category])
 
   return (
@@ -36,9 +44,12 @@ function Home() {
         </div>
         <div className="row justify-content-center">
           <div className="col text-center">
-            <h2 className="border border-secondary-subtle border-4 hero-bottom bg-secondary-subtle fst-italic text-decoration-underline">
-              Use the search tab to get started.
-            </h2>
+            <Link
+              to="/search"
+              className="fs-2 border border-secondary-subtle border-4 hero-bottom bg-secondary-subtle fst-italic text-decoration-underline"
+            >
+              Search to get started.
+            </Link>
           </div>
         </div>
       </div>

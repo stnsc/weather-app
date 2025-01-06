@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 function Navbar() {
   return (
@@ -6,8 +6,8 @@ function Navbar() {
       <nav className="navbar navbar-expand-md fixed-top bg-body-secondary">
         <div className="container-fluid">
           <div className="d-flex flex-column w-100 text-center">
-            <a className="navbar-brand" href="#">
-              Weather App
+            <a className="navbar-brand m-0" href="#">
+              Weather App | Stanescu Vladut George
             </a>
             <button
               className="navbar-toggler collapsed"
@@ -22,20 +22,16 @@ function Navbar() {
             </button>
             <div className="collapse navbar-collapse" id="navbarToggler">
               <ul className="nav navbar-nav mx-auto">
-                <Link to="/" className="nav-item">
-                  <a className="nav-link" href="#">
-                    Home
-                  </a>
+                <Link to="/" className="nav-item ">
+                  <div className="nav-link">
+                    <i className="bi bi-house-fill"></i> Home
+                  </div>
                 </Link>
-                <Link to="/search" className="nav-item">
-                  <a className="nav-link" href="#">
-                    Search
-                  </a>
-                </Link>
-                <Link to="/fav" className="nav-item">
-                  <a className="nav-link" href="#">
-                    Favourites
-                  </a>
+
+                <Link to="/search" className="nav-item ">
+                  <div className="nav-link">
+                    <i className="bi bi-search"></i> Search
+                  </div>
                 </Link>
               </ul>
             </div>
