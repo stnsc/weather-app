@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 function Navbar() {
   return (
     <>
-      <nav className="navbar navbar-expand-md fixed-top bg-body-secondary">
+      <nav className="navbar fixed-bottom navbar-expand-md bg-body-secondary">
         <div className="container-fluid">
           <div className="d-flex flex-column w-100 text-center">
             <a className="navbar-brand m-0" href="#">
@@ -31,6 +31,12 @@ function Navbar() {
                 <Link to="/search" className="nav-item ">
                   <div className="nav-link">
                     <i className="bi bi-search"></i> Search
+                  </div>
+                </Link>
+
+                <Link to="/favourites" className="nav-item ">
+                  <div className="nav-link">
+                    <i className="bi bi-stars"></i> Favourites
                   </div>
                 </Link>
               </ul>

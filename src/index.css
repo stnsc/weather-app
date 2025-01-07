@@ -7,7 +7,7 @@ body{
 }
 
 .main-content{
-    margin-top: 5.5em;
+    margin-bottom: 5.5em;
 }
 
 .main-page-container{
@@ -79,6 +79,16 @@ body{
     }
 }
 
+.temp-display{
+    display: flex;
+    justify-content: flex-end;
+    
+    padding: .2em;
+    border-radius: 1em;
+
+    background-color: rgba(0, 0, 0, 0.25);
+}   
+
 .weather-info{
 
     hr.line{
@@ -88,15 +98,7 @@ body{
         background: linear-gradient(90deg, transparent, gray);
     }
 
-    .temp-display{
-        display: flex;
-        justify-content: flex-end;
-        
-        padding: .2em;
-        border-radius: 1em;
-
-        background-color: rgba(0, 0, 0, 0.25);
-    }
+  
 
     .weather-icon{
         display: flex;
@@ -155,6 +157,10 @@ hr.timeshift{
     background: linear-gradient(90deg, rgba(255,176,0,0.2) 0%, rgba(0,106,255,0.2) 100%);
 }
 
+.forecast{
+    margin-bottom: 2em;
+}
+
 .forecast-item{
     padding: .5em;
     border-radius: 1em;
@@ -170,4 +176,27 @@ hr.timeshift{
     padding-left: .5em;
     padding-right: .5em;
     margin: .5em;
+}
+
+.favourite-button{
+    padding: .5em;
+    border-radius: 1em;
+    background-color: #0000001c;
+    margin: .5em;
+}
+
+.favourite-button:hover{
+    cursor: pointer;
+}
+
+.fav-card{
+    background-color: #0000002a;
+    border-radius: 5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.fav-loc{
+    margin-left: 2em;
+    margin-top: 1em;
 }

@@ -19,8 +19,6 @@ interface Location {
   }
 }
 
-const api_key = "e551a72de210257f2859395a80256d97"
-
 const getColorForTemperature = (temp: number) => {
   const startColor = [0, 225, 255] // Light blue (RGB)
   const endColor = [255, 165, 0] // Orange (RGB)
@@ -33,7 +31,10 @@ const getColorForTemperature = (temp: number) => {
   return `${r},${g},${b}`
 }
 
-function WeatherData({ loc }: Location) {
+function WeatherData({
+  loc,
+  setIsDataLoaded,
+}: Location & { setIsDataLoaded: (loaded: boolean) => void }) {
   const [weather, setWeather] = useState({
     temp: 0,
     temp_max: 0,
@@ -52,10 +53,44 @@ function WeatherData({ loc }: Location) {
   })
   const [forecast, setForecast] = useState([])
 
+  const [isFavourite, setIsFavourite] = useState(false)
+  const toggleFavourite = () => {
+    setIsFavourite(!isFavourite)
+  }
+  const [initialized, setInitialized] = useState(false)
+
+  useEffect(() => {
+    if (!initialized) return
+
+    const favourites = JSON.parse(localStorage.getItem("favourites") || "[]")
+
+    if (isFavourite) {
+      const newFavourite = {
+        name: weather.location,
+        lat: loc.lat,
+        lon: loc.lon,
+      }
+      const isDuplicate = favourites.some(
+        (fav: { lat: number; lon: number }) =>
+          fav.lat === loc.lat && fav.lon === loc.lon
+      )
+      if (!isDuplicate) {
+        favourites.push(newFavourite)
+        localStorage.setItem("favourites", JSON.stringify(favourites))
+      }
+    } else {
+      const updatedFavourites = favourites.filter(
+        (fav: { lat: number; lon: number }) =>
+          fav.lat !== loc.lat && fav.lon !== loc.lon
+      )
+      localStorage.setItem("favourites", JSON.stringify(updatedFavourites))
+    }
+  }, [isFavourite, initialized, loc.lat, loc.lon, weather.location])
+
   useEffect(() => {
     if (loc.lon !== 0 && loc.lat !== 0) {
       fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${loc.lat}&lon=${loc.lon}&units=metric&appid=${api_key}`
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${loc.lat}&lon=${loc.lon}&units=metric&appid=${import.meta.env.VITE_API_KEY}`
       )
         .then((response) => {
           if (!response.ok) {
@@ -64,11 +99,7 @@ function WeatherData({ loc }: Location) {
           return response.json()
         })
         .then((data) => {
-          const dailyForecast = data.list
-            .filter((reading: { dt_txt: string }) =>
-              reading.dt_txt.includes("12:00:00")
-            )
-            .slice(0, 5)
+          const dailyForecast = data.list.slice(0, 9)
           setForecast(dailyForecast)
         })
         .catch((error) => console.error("Error:", error))
@@ -78,7 +109,7 @@ function WeatherData({ loc }: Location) {
   useEffect(() => {
     if (loc.lon !== 0 && loc.lat !== 0) {
       fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${loc.lat}&lon=${loc.lon}&units=metric&appid=${api_key}`
+        `https://api.openweathermap.org/data/2.5/weather?lat=${loc.lat}&lon=${loc.lon}&units=metric&appid=${import.meta.env.VITE_API_KEY}`
       )
         .then((response) => {
           if (!response.ok) {
@@ -108,10 +139,21 @@ function WeatherData({ loc }: Location) {
             sunrise: convertUnixToTime(data.sys.sunrise, data.timezone),
             sunset: convertUnixToTime(data.sys.sunset, data.timezone),
           })
+
+          const favourites = JSON.parse(
+            localStorage.getItem("favourites") || "[]"
+          )
+          const isFav = favourites.some(
+            (fav: { lat: number; lon: number }) =>
+              fav.lat === loc.lat && fav.lon === loc.lon
+          )
+          setIsFavourite(isFav)
+          setInitialized(true)
+          setIsDataLoaded(true)
         })
         .catch((error) => console.error("Error:", error))
     }
-  }, [loc])
+  }, [loc, setIsDataLoaded])
 
   return (
     <div className="search-container">
@@ -121,6 +163,10 @@ function WeatherData({ loc }: Location) {
             <h2>Weather in</h2>
             <h1 className="display-2 text-decoration-underline">
               {weather.location}
+              <i
+                className={`favourite-button bi ${isFavourite ? "bi-star-fill text-warning" : "bi-star"} fs-1`}
+                onClick={toggleFavourite}
+              ></i>
             </h1>
             <h3 className="weather-icon">
               <img
@@ -225,30 +271,35 @@ function WeatherData({ loc }: Location) {
 
       <hr className="line" />
 
-      <div className="forecast container d-flex justify-content-center gap-3">
-        {forecast.map(({ dt_txt, main, weather }: Schedule) => (
-          <div
-            key={dt_txt}
-            className="forecast-item d-flex flex-column align-items-center"
-          >
-            <p>{dt_txt.slice(5, 10)}</p>
-            <h3
-              style={{
-                filter: `drop-shadow(0px 0px 10px rgb(${getColorForTemperature(main.temp)}`,
-              }}
+      <div className="containter d-flex flex-column bg-tetriary">
+        <h3 className="row justify-content-center">Weather over 24h...</h3>
+        <div className="forecast container d-flex justify-content-center gap-3">
+          {forecast.map(({ dt_txt, main, weather }: Schedule) => (
+            <div
+              key={dt_txt}
+              className="forecast-item d-flex flex-column align-items-center"
             >
-              {main.temp}°C
-            </h3>
-            <p className="text-center">
-              Feels like <br /> {main.feels_like}°C
-            </p>
-            <img
-              src={`https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`}
-              alt=""
-            />
-            {weather[0].main}
-          </div>
-        ))}
+              <p>
+                {dt_txt.slice(5, 10)}, {dt_txt.slice(11, 16)}
+              </p>
+              <h3
+                style={{
+                  filter: `drop-shadow(0px 0px 10px rgb(${getColorForTemperature(main.temp)}`,
+                }}
+              >
+                {+main.temp.toFixed(0)}°C
+              </h3>
+              <p className="text-center">
+                Feels like <br /> {+main.feels_like.toFixed(0)}°C
+              </p>
+              <img
+                src={`https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`}
+                alt=""
+              />
+              {weather[0].main}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

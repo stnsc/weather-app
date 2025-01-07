@@ -1,11 +1,16 @@
 import { useState } from "react"
 import WeatherData from "../components/WeatherData"
+import { motion } from "framer-motion"
 
-const api_key = "e551a72de210257f2859395a80256d97"
+const fadeScaleVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1 },
+}
 
 function Search() {
   const [city, setCity] = useState("")
   const [loc, setLoc] = useState({ lon: 0, lat: 0 })
+  const [isDataLoaded, setIsDataLoaded] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCity(e.target.value)
@@ -13,7 +18,7 @@ function Search() {
 
   const handleSearch = () => {
     fetch(
-      `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${api_key}`
+      `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${import.meta.env.VITE_API_KEY}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -46,7 +51,16 @@ function Search() {
           <i className="bi bi-search"></i>
         </button>
       </div>
-      {loc.lon !== 0 && loc.lat !== 0 && <WeatherData loc={loc} />}
+      <motion.div
+        variants={fadeScaleVariants}
+        initial="hidden"
+        animate={isDataLoaded ? "visible" : "hidden"}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        {loc.lon !== 0 && loc.lat !== 0 && (
+          <WeatherData loc={loc} setIsDataLoaded={setIsDataLoaded} />
+        )}
+      </motion.div>
     </div>
   )
 }
