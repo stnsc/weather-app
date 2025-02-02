@@ -1,4 +1,4 @@
-Hosted on https://github.com/stnsc/weather-app
+Hosted on [https://github.com/stnsc/weather-app](https://stnsc.github.io/weather-app/)
 
 Proiect TIM | Stanescu Vladut George
 
