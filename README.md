@@ -1,3 +1,5 @@
+Hosted on https://github.com/stnsc/weather-app
+
 Proiect TIM | Stanescu Vladut George
 
 Features
